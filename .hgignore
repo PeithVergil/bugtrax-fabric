@@ -1,0 +1,6 @@
+syntax:glob
+
+*.pyc
+
+# SECURITY WARNING: Keep this file out of the repo.
+config.conf
