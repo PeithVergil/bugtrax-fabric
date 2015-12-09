@@ -8,7 +8,9 @@ fab --config=config.conf system.info
 
 from fabric.api import env, task, execute, require, settings
 
+import python
 import system
+import ufw
 
 
 require('SYSTEM_USER')
@@ -77,6 +79,8 @@ def setup():
     execute('ufw.enable')
 
     # Setup Python Environment.
+    require('PYTHON_VENV')
+
     execute('python.dev')
-    execute('python.venv', 'bugtrax')
-    execute('python.install')
+    execute('python.venv', env.PYTHON_VENV)
+    execute('python.install', env.PYTHON_VENV)
