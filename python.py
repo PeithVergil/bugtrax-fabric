@@ -15,8 +15,12 @@ def dev():
 
     # Python build headers.
     packages = [
+        'python3-setuptools',
         'python3-dev',
         'python3-tk',
+        'python-setuptools',
+        'python-dev',
+        'python-tk',
     ]
 
     sudo('apt-get -y install {}'.format(' '.join(packages)))
