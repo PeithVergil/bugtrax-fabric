@@ -84,13 +84,13 @@ def user_delete(username):
 
 
 @task
-def user_sshkey():
+def user_sshkey(username):
     """
     Upload an SSH key to the remote system for the current user.
 
     :Example:
 
-    fab --config=config.conf system.user_sshkey
+    fab --config=config.conf system.user_sshkey:username=hello
     """
 
     require('PUBLIC_SSH_KEY')
@@ -98,9 +98,8 @@ def user_sshkey():
     with open(env.PUBLIC_SSH_KEY) as reader:
         key = reader.read()
 
-    remote_directory = '/home/{}/.ssh'.format(env.user)
-
-    remote_authkeys = '{}/authorized_keys'.format(remote_directory)
+    remote_directory = '/home/{}/.ssh'.format(username)
+    remote_authkeys = '/home/{}/.ssh/authorized_keys'.format(username)
 
     new_directory = False
 
@@ -108,17 +107,19 @@ def user_sshkey():
         new_directory = True
 
         # Create the ".ssh" directory.
-        run('mkdir -p {}'.format(remote_directory))
+        sudo('mkdir -p {}'.format(remote_directory))
 
     # Add the key to "authorized keys".
-    files.append(remote_authkeys, key)
+    files.append(remote_authkeys, key, use_sudo=True)
 
     if new_directory:
-        # Set directory permission to "700".
-        run('chmod 700 {}'.format(remote_directory))
+        # Set permissions.
+        sudo('chmod 700 {}'.format(remote_directory))
+        sudo('chmod 600 {}'.format(remote_authkeys))
 
-        # Set file permission to "600".
-        run('chmod 600 {}'.format(remote_authkeys))
+        # Set owners.
+        sudo('chown {}:{} {}'.format(username, username, remote_directory))
+        sudo('chown {}:{} {}'.format(username, username, remote_authkeys))
 
 
 def add_usr(username):
