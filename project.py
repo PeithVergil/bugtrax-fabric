@@ -17,6 +17,9 @@ def clone():
     require('PROJECT_REPO')
     require('MERCURIAL_BIN')
 
+    # Create the "apps" directory if it does not exist.
+    run('mkdir -p {}'.format(utils.home('apps')))
+
     if files.exists(utils.home('apps', env.PROJECT_NAME)):
         delete()
 

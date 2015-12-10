@@ -8,6 +8,7 @@ fab --config=config.conf system.info
 
 from fabric.api import env, task, execute, require, settings
 
+import mercurial
 import project
 import python
 import system
@@ -33,8 +34,6 @@ def setup():
 
     fab --config=config.conf setup
     """
-    new_user = False
-
     # Ignore errors if the user already exists.
     with settings(user=env.ROOT_USER, password=env.ROOT_PASS, warn_only=True):
         # Create a new system user.
@@ -42,12 +41,9 @@ def setup():
                          env.SYSTEM_USER,
                          env.SYSTEM_PASS)
 
+        # Upload SSH key for the new system.
         if result.get(env.host):
-            new_user = True
-
-    # Upload SSH key for the new system.
-    if new_user:
-        execute('system.user_sshkey')
+            execute('system.user_sshkey', env.SYSTEM_USER)
 
     ##############################
     # RUN SERVER UPDATES
@@ -79,6 +75,15 @@ def setup():
     # Enable the firewall.
     execute('ufw.enable')
 
+    # Install supervisor
+    # execute('supervisor.install')
+
+    # Install mercurial
+    execute('mercurial.install')
+
+    # Install nginx
+    # execute('nginx.install')
+
     # Setup Python Environment.
     require('PYTHON_VENV')
 
@@ -86,6 +91,7 @@ def setup():
     execute('python.venv', env.PYTHON_VENV)
     execute('python.install', env.PYTHON_VENV)
 
+    """
     # Deploy the project.
     #
     # fab --config=config.conf project.clone \
@@ -98,3 +104,4 @@ def setup():
     execute('project.migrate')
     execute('project.collectstatic')
     execute('project.restart')
+    """
