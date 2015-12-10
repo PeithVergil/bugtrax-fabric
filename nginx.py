@@ -68,11 +68,13 @@ def config():
 
     put(local, remote, mode='0644', use_sudo=True)
 
+    # Change owner to "root".
     sudo('chown root:root {}'.format(remote))
 
-    if files.exists(target):
-        sudo('rm {}'.format(target))
+    # Remove old symlink.
+    sudo('rm {}'.format(target))
 
+    # Create new symlink.
     sudo('ln -s {} {}'.format(remote, target))
 
     # Create the nginx log directory.
