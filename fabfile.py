@@ -8,6 +8,7 @@ fab --config=config.conf system.info
 
 from fabric.api import env, task, execute, require, settings
 
+import supervisor
 import mercurial
 import project
 import python
@@ -77,7 +78,7 @@ def setup():
     execute('ufw.enable')
 
     # Install supervisor
-    # execute('supervisor.install')
+    execute('supervisor.install')
 
     # Install mercurial
     execute('mercurial.install')
@@ -106,3 +107,7 @@ def setup():
     execute('project.migrate')
     execute('project.collectstatic')
     execute('project.restart')
+
+    execute('supervisor.restart')
+    execute('supervisor.reread')
+    execute('supervisor.update')
