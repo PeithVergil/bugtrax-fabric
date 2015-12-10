@@ -22,7 +22,7 @@ require('SYSTEM_PASS')
 env.user, env.password = env.SYSTEM_USER, env.SYSTEM_PASS
 
 env.hosts = [
-    '45.55.143.189',
+    env.HOST
 ]
 
 
