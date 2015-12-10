@@ -66,7 +66,9 @@ def config():
     remote = '/etc/nginx/sites-available/default'
     target = '/etc/nginx/sites-enabled/default'
 
-    put(local, remote, mode=644, use_sudo=True)
+    put(local, remote, mode='0644', use_sudo=True)
+
+    sudo('chown root:root {}'.format(remote))
 
     if files.exists(target):
         sudo('rm {}'.format(target))
