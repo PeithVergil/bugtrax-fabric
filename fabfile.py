@@ -87,6 +87,12 @@ def setup():
     execute('python.install', env.PYTHON_VENV)
 
     # Deploy the project.
+    #
+    # fab --config=config.conf project.clone \
+    #                          project.config \
+    #                          project.migrate \
+    #                          project.collectstatic \
+    #                          project.restart
     execute('project.clone')
     execute('project.config')
     execute('project.migrate')
