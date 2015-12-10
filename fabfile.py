@@ -85,3 +85,10 @@ def setup():
     execute('python.dev')
     execute('python.venv', env.PYTHON_VENV)
     execute('python.install', env.PYTHON_VENV)
+
+    # Deploy the project.
+    execute('project.clone')
+    execute('project.config')
+    execute('project.migrate')
+    execute('project.collectstatic')
+    execute('project.restart')
