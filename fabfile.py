@@ -8,6 +8,7 @@ fab --config=config.conf system.info
 
 from fabric.api import env, task, execute, require, settings
 
+import project
 import python
 import system
 import ufw
@@ -67,7 +68,7 @@ def setup():
 
     # Install ufw
     execute('ufw.install')
-    # Deny all incoming connections by default.
+    # Deny incoming connections.
     execute('ufw.default')
     # Allow SSH (22/tcp) access.
     execute('ufw.allow', 'ssh')

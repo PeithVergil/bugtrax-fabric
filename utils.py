@@ -5,6 +5,8 @@ from crypt import crypt
 from hashlib import md5
 from os.path import abspath, dirname, exists, join
 
+from fabric.api import env
+
 
 # Use the system random generator.
 rand = random.SystemRandom()
@@ -48,6 +50,10 @@ def config(*filenames):
         return path
 
     return None
+
+
+def home(*paths):
+    return join('/home/{0}'.format(env.user), *paths)
 
 
 def hash(password):
