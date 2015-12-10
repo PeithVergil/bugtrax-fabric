@@ -38,6 +38,13 @@ def config():
 
     fab --config=config.conf project.config
     """
+    config_django()
+    config_svisor()
+
+
+def config_django():
+    require('PROJECT_NAME')
+
     project = env.PROJECT_NAME
 
     filename = 'prod.py'
@@ -47,6 +54,16 @@ def config():
     remote_file = utils.home('apps', project, 'config', 'settings', filename)
 
     put(local_file, remote_file)
+
+
+def config_svisor():
+    filename = 'bugtrax.conf'
+
+    local_file = utils.file_path('supervisor', filename)
+
+    remote_file = '/etc/supervisor/conf.d/{0}'.format(filename)
+
+    put(local_file, remote_file, mode=644, use_sudo=True)
 
 
 @task
