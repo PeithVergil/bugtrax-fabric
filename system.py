@@ -32,6 +32,19 @@ def update():
 
 
 @task
+def shutdown():
+    """
+    Shutdown the server.
+
+    :Example:
+
+    fab --config=config.conf system.shutdown
+    """
+
+    sudo('shutdown -h now')
+
+
+@task
 def autoremove():
     """
     Remove unused system packages.
