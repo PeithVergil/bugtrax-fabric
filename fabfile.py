@@ -12,6 +12,7 @@ import mercurial
 import project
 import python
 import system
+import nginx
 import ufw
 
 
@@ -82,7 +83,9 @@ def setup():
     execute('mercurial.install')
 
     # Install nginx
-    # execute('nginx.install')
+    execute('nginx.install')
+    execute('nginx.config')
+    execute('nginx.restart')
 
     # Setup Python Environment.
     require('PYTHON_VENV')
@@ -91,7 +94,6 @@ def setup():
     execute('python.venv', env.PYTHON_VENV)
     execute('python.install', env.PYTHON_VENV)
 
-    """
     # Deploy the project.
     #
     # fab --config=config.conf project.clone \
@@ -104,4 +106,3 @@ def setup():
     execute('project.migrate')
     execute('project.collectstatic')
     execute('project.restart')
-    """
