@@ -43,6 +43,15 @@ def file_read(*filenames):
     return result
 
 
+def files(*filenames):
+    path = local_path('files', *filenames)
+
+    if exists(path):
+        return path
+
+    return None
+
+
 def config(*filenames):
     path = local_path('config', *filenames)
 

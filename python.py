@@ -1,6 +1,105 @@
 from fabric.api import cd, env, put, run, task, sudo, prefix, require
+from fabric.contrib import files
 
 import utils
+
+
+@task
+def conda_install():
+    """
+    Download and install "miniconda".
+
+    :Example:
+
+    fab --config=config.conf python.conda_install
+    """
+    require('MINICONDA_NAME')
+    require('MINICONDA_FILE')
+
+    with cd(utils.home()):
+        if not files.exists(env.MINICONDA_NAME):
+            # Download the miniconda installer.
+            run('wget {0}'.format(env.MINICONDA_FILE))
+
+        # Give permission to execute installer.
+        run('chmod u+x {0}'.format(env.MINICONDA_NAME))
+
+        # Put miniconda in the "apps" directory.
+        apps = utils.home('apps')
+
+        run('mkdir -p {0}'.format(apps))
+
+        # OPTIONS:
+        #
+        # -b Run in silent mode.
+        # -p The path where miniconda will be installed.
+        run('bash {0} -b -p {1}/miniconda'.format(env.MINICONDA_NAME, apps))
+
+        # Add the executables to the system path.
+        export = 'export PATH="{0}/miniconda/bin:$PATH"'.format(apps)
+
+        files.append('.bashrc', '###########')
+        files.append('.bashrc', '# MINICONDA')
+        files.append('.bashrc', export)
+
+        # Remove the installer after installation.
+        run('rm {0}'.format(env.MINICONDA_NAME))
+
+
+@task
+def conda_list_environments():
+    """
+    List all conda virtual environments.
+
+    :Example:
+
+    fab --config=config.conf python.conda_list_environments
+    """
+    conda = '{0}/bin/conda'.format(utils.home('apps', 'miniconda'))
+
+    run('{conda} info --envs'.format(conda=conda))
+
+
+@task
+def conda_create_environment(name, python='3'):
+    """
+    Create a new virtual environment. Installs "Python 3" by default.
+
+    :Example:
+
+    fab --config=config.conf python.conda_create_environment:name=bugtrax
+    """
+    conda = '{0}/bin/conda'.format(utils.home('apps', 'miniconda'))
+
+    run('{conda} create --name {name} python={python} --yes'.format(
+        name=name,
+        conda=conda,
+        python=python))
+
+
+@task
+def conda_install_requirements(venv):
+    """
+    Run "pip install -r" on the requirements file.
+
+    :Example:
+
+    fab --config=config.conf python.conda_install_requirements:venv=bugtrax
+    """
+    # Upload the requirements file.
+    put(utils.files('requirements', 'base.txt'), utils.home('base.txt'))
+    put(utils.files('requirements', 'prod.txt'), utils.home('prod.txt'))
+
+    # Activate the virtual environment.
+    activate = '{0}/bin/activate'.format(utils.home('apps', 'miniconda'))
+
+    with prefix('source {activate} {venv}'.format(venv=venv, activate=activate)):
+        run('pip install -r {0}'.format(utils.home('prod.txt')))
+
+    # Remove the uploaded files.
+    with cd(utils.home()):
+        run('rm {0}'.format(utils.home('base.txt')))
+        run('rm {0}'.format(utils.home('prod.txt')))
 
 
 @task
